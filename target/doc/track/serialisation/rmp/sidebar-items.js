@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Rmp","Serialization strategy using rmp-serde."]]});

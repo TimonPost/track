@@ -1,13 +1,37 @@
 [package]
 name = "track"
 version = "0.0.0"
-authors = ["Timon Post <timonpost@hotmail.nl>"]
+authors = ["Timon Post"]
 edition = "2018"
-description = "Track type data modifications."
+description = "Track struct data modifications."
 keywords = ["track", "monitor", "modification", "change", "trace"]
 exclude = ["target", "Cargo.lock"]
 license = "MIT"
+repository = "https://github.com/entity-sync-rs/track"
+documentation = "https://docs.rs/track/"
+readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+default = ["bincode-serialization"]
+bincode-serialization = ["bincode"]
+rmp-serialization = ["rmp-serde"]
+
 [dependencies]
+track-macro = { version = "0.0.0", path = "../track-macro" }
+serde-diff = { version = "0.2.0"  }
+serde = "1"
+crossbeam-channel = "0.4.0"
+uuid = { version = "0.8.1", features=["v4"] }
+
+# serializers
+rmp-serde = {version = "0.14.2", optional = true }
+bincode = { version = "1.2.1", optional = true }
+
+[dev-dependencies]
+criterion = "0.3.1"
+
+[[bench]]
+name = "bench_main"
+harness = false
