@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["Bincode","Serialization strategy using bincode."]]});
