@@ -1,4 +1,4 @@
-use crate::{preclude::SerdeDiff, serialisation::SerialisationStrategy};
+use crate::{SerdeDiff, serialisation::SerialisationStrategy};
 use std::fmt::Debug;
 
 /// Applies modified values to a type.

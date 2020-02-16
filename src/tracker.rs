@@ -1,14 +1,13 @@
 use std::ops::{Deref, DerefMut};
 
 use crossbeam_channel::Sender;
-use serde_diff::{Config, Diff, FieldPathMode, SerdeDiff};
+use serde_diff::{Config, Diff, FieldPathMode};
 use uuid::Uuid;
 
 use crate::{
     serialisation::{ModificationSerializer, SerialisationStrategy},
     ModificationEvent, TrackableMarker,
 };
-use std::fmt::Debug;
 
 /// Tracks value modifications of a type and sends events with these changes.
 ///

@@ -39,40 +39,43 @@ where
 /// A marker traits with a number of requirements that are mandatory for trackable types.
 pub trait TrackableMarker: Clone + SerdeDiff + Debug + Send + Sync + 'static {}
 
-/// A re-export of the [serde](LINK) create.
-pub mod _serde {
-    pub use serde::*;
-}
+pub mod re_exports {
+    /// A re-export of the [serde](LINK) create.
+    pub mod serde {
+        pub use serde::*;
+    }
 
-/// A re-export of the [serde-diff](LINK) create.
-pub mod _serde_diff {
-    pub use serde_diff::*;
-}
+    /// A re-export of the [serde-diff](LINK) create.
+    pub mod serde_diff {
+        pub use serde_diff::*;
+    }
 
-/// A re-export of the [crossbeam-channel](LINK) create.
-pub mod _crossbeam_channel {
-    pub use crossbeam_channel::*;
-}
+    /// A re-export of the [crossbeam-channel](LINK) create.
+    pub mod crossbeam_channel {
+        pub use crossbeam_channel::*;
+    }
 
-#[cfg(feature = "uuid")]
-/// A re-export of the [uuid](LINK) create.
-pub mod _uuid {
-    pub use uuid::*;
+    /// A re-export of the [uuid](LINK) create.
+    pub mod uuid {
+        pub use uuid::*;
+    }
 }
 
 /// A re-export with types needed for the [track](LINK) attribute.
 pub mod preclude {
     pub use crate::{
         ModificationEvent, Trackable, TrackableMarker, Tracker,
-        _crossbeam_channel::Sender,
-        _serde::{Deserialize, Serialize},
-        _serde_diff::SerdeDiff,
-        _uuid::Uuid,
     };
+
+    pub use crossbeam_channel::Sender;
+    pub use serde::{Deserialize, Serialize};
+    pub use self::serde_diff::SerdeDiff;
+    pub use uuid::Uuid;
+
     pub use track_macro::track;
 
     pub use crate::serialisation::{bincode::Bincode, SerialisationStrategy};
 
     // `serde-diff`s macro's require `serde_diff` to be imported when we use `track` attribute macro.
-    pub use crate::_serde_diff as serde_diff;
+    pub use crate::re_exports::serde_diff;
 }
