@@ -26,7 +26,7 @@ pub mod bincode;
 pub mod rmp;
 
 /// An adapter interface with extension methods for serializing purposes used in this crate.
-pub trait SerialisationStrategy: Clone + Default {
+pub trait SerialisationStrategy: Clone + Default + Send + Sync {
     /// Serializes the given type to a byte buffer.
     fn serialize<I: Serialize>(&self, input: &I) -> Vec<u8>;
 
