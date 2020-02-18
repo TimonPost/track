@@ -9,8 +9,18 @@ pub struct Position {
     y: f32,
 }
 
-pub fn make_change_and_monitor(notifier: &Sender<ModificationEvent>, serializable: &mut Position) {
-    let mut component = serializable.track(&notifier);
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub struct Identity {
+    pub value: u64,
+}
+
+impl Identifier for Identity {}
+
+pub fn make_change_and_monitor(
+    notifier: &Sender<ModificationEvent<Identity>>,
+    serializable: &mut Position,
+) {
+    let mut component = serializable.track(&notifier, Identity { value: 123456 });
     component.x += 0.4;
     component.y += 0.3;
 }

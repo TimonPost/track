@@ -1,17 +1,15 @@
-use crate::preclude::Uuid;
-
 #[derive(Clone, Debug)]
 /// A modification event.
-pub struct ModificationEvent {
+pub struct ModificationEvent<I> {
     /// The serialized data of the modified structure fields.
     pub modified_fields: Vec<u8>,
     /// The reference to the corresponding type.
-    pub identifier: Option<Uuid>,
+    pub identifier: I,
 }
 
-impl ModificationEvent {
+impl<I> ModificationEvent<I> {
     /// Constructs a new [Modification Event](LINK).
-    pub fn new(data: Vec<u8>, identifier: Option<Uuid>) -> Self {
+    pub fn new(data: Vec<u8>, identifier: I) -> Self {
         ModificationEvent {
             modified_fields: data,
             identifier,

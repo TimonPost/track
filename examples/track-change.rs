@@ -7,12 +7,19 @@ pub struct Position {
     pub y: u32,
 }
 
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub struct Identity {
+    pub value: u8,
+}
+
+impl Identifier for Identity {}
+
 fn main() {
-    let channel = ModificationChannel::new();
+    let channel = ModificationChannel::<Identity>::new();
 
     let updated_storage = vec![
-        (Uuid::new_v4(), Position { x: 0, y: 0 }),
-        (Uuid::new_v4(), Position { x: 0, y: 0 }),
+        (Identity { value: 1 }, Position { x: 0, y: 0 }),
+        (Identity { value: 2 }, Position { x: 0, y: 0 }),
     ];
     let mut outdated_storage = updated_storage.clone();
 
@@ -23,9 +30,9 @@ fn main() {
     apply_changes(&channel, &mut outdated_storage);
 }
 
-fn make_changes(channel: &ModificationChannel, entities: Vec<(Uuid, Position)>) {
-    for (uuid, mut position) in entities {
-        let mut position = position.track_by(channel.sender(), uuid); /* returns `Tracker` which tracks changes */
+fn make_changes(channel: &ModificationChannel<Identity>, entities: Vec<(Identity, Position)>) {
+    for (id, mut position) in entities {
+        let mut position = position.track(channel.sender(), id); /* returns `Tracker` which tracks changes */
 
         // `Tracker` implements `DerefMut`
         position.x += 1;
@@ -33,11 +40,14 @@ fn make_changes(channel: &ModificationChannel, entities: Vec<(Uuid, Position)>) 
     } // <- on the `Drop` of `wrapper` changes are serialized and sent on the channel.
 }
 
-fn apply_changes(channel: &ModificationChannel, entities: &mut Vec<(Uuid, Position)>) {
+fn apply_changes(
+    channel: &ModificationChannel<Identity>,
+    entities: &mut Vec<(Identity, Position)>,
+) {
     for event in channel.receiver().try_iter() {
         let entity = entities
             .iter_mut()
-            .find(|e| e.0 == event.identifier.unwrap())
+            .find(|e| e.0 == event.identifier)
             .unwrap();
 
         Apply::apply_to(&mut entity.1, &event.modified_fields, Bincode);

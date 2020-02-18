@@ -2,11 +2,10 @@ use std::ops::{Deref, DerefMut};
 
 use crossbeam_channel::Sender;
 use serde_diff::{Config, Diff, FieldPathMode};
-use uuid::Uuid;
 
 use crate::{
     serialisation::{ModificationSerializer, SerialisationStrategy},
-    ModificationEvent, TrackableMarker,
+    Identifier, ModificationEvent, TrackableMarker,
 };
 
 /// Tracks value modifications of a type and sends events with these changes.
@@ -14,22 +13,24 @@ use crate::{
 /// The [Tracker](LINK) implements [Deref](LINK) which makes it possible to treat this tracker as if you are working with the type you track.
 /// On [Drop](LINK) it checks if modifications have been made.
 /// If this is the case only the modified fields in an event will be sent to the given sender.
-pub struct Tracker<'borrow, 'notifier, C, S>
+pub struct Tracker<'borrow, 'notifier, C, S, I>
 where
     C: TrackableMarker,
     S: SerialisationStrategy,
+    I: Identifier,
 {
     old_copy: C,
     borrow: &'borrow mut C,
-    notifier: &'notifier Sender<ModificationEvent>,
+    notifier: &'notifier Sender<ModificationEvent<I>>,
     serialisation: S,
-    identifier: Option<Uuid>,
+    identifier: I,
 }
 
-impl<'borrow, 'notifier, C, S> Tracker<'borrow, 'notifier, C, S>
+impl<'borrow, 'notifier, C, S, I> Tracker<'borrow, 'notifier, C, S, I>
 where
     C: TrackableMarker,
     S: SerialisationStrategy,
+    I: Identifier,
 {
     /// Constructs a new tracker.
     ///
@@ -40,10 +41,10 @@ where
     /// * `identifier`: Optionally you can give an identifier with which you can link the event to the type.
     pub fn new(
         borrow: &'borrow mut C,
-        notifier: &'notifier Sender<ModificationEvent>,
+        notifier: &'notifier Sender<ModificationEvent<I>>,
         serialisation: S,
-        identifier: Option<Uuid>,
-    ) -> Tracker<'borrow, 'notifier, C, S> {
+        identifier: I,
+    ) -> Tracker<'borrow, 'notifier, C, S, I> {
         Tracker {
             old_copy: (borrow.deref()).clone(),
             borrow,
@@ -54,10 +55,11 @@ where
     }
 }
 
-impl<'borrow, 'notifier, C, S> Deref for Tracker<'borrow, 'notifier, C, S>
+impl<'borrow, 'notifier, C, S, I> Deref for Tracker<'borrow, 'notifier, C, S, I>
 where
     C: TrackableMarker,
     S: SerialisationStrategy,
+    I: Identifier,
 {
     type Target = C;
 
@@ -67,10 +69,11 @@ where
     }
 }
 
-impl<'borrow, 'notifier, C, S> DerefMut for Tracker<'borrow, 'notifier, C, S>
+impl<'borrow, 'notifier, C, S, I> DerefMut for Tracker<'borrow, 'notifier, C, S, I>
 where
     C: TrackableMarker,
     S: SerialisationStrategy,
+    I: Identifier,
 {
     /// Returns a mutable reference to the underlying type being tracked.
     fn deref_mut(&mut self) -> &mut Self::Target {
@@ -78,10 +81,11 @@ where
     }
 }
 
-impl<'borrow, 'notifier, C, S> Drop for Tracker<'borrow, 'notifier, C, S>
+impl<'borrow, 'notifier, C, S, I> Drop for Tracker<'borrow, 'notifier, C, S, I>
 where
     C: TrackableMarker,
     S: SerialisationStrategy,
+    I: Identifier,
 {
     /// Checks to see if any field values have changed.
     /// If this is the case, the changed fields will be packed into an event and an event will be sent.
