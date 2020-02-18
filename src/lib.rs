@@ -11,6 +11,7 @@ use std::fmt::Debug;
 
 mod apply;
 mod channel;
+mod error;
 mod event;
 mod tracker;
 
@@ -63,13 +64,11 @@ pub mod re_exports {
 
 /// A re-export with types needed for the [track](LINK) attribute.
 pub mod preclude {
-    pub use crate::{
-        ModificationEvent, Trackable, TrackableMarker, Tracker,
-    };
+    pub use crate::{ModificationEvent, Trackable, TrackableMarker, Tracker};
 
+    pub use self::serde_diff::SerdeDiff;
     pub use crossbeam_channel::Sender;
     pub use serde::{Deserialize, Serialize};
-    pub use self::serde_diff::SerdeDiff;
     pub use uuid::Uuid;
 
     pub use track_macro::track;

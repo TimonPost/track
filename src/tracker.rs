@@ -92,11 +92,20 @@ where
 
         let serializer = ModificationSerializer::new(self.serialisation.clone());
 
-        let data = serializer.serialize::<Diff<C>>(&diff);
-
-        if diff.has_changes() {
-            self.notifier
-                .send(ModificationEvent::new(data, self.identifier));
-        }
+        match serializer.serialize::<Diff<C>>(&diff) {
+            Ok(data) => {
+                if diff.has_changes() {
+                    self.notifier
+                        .send(ModificationEvent::new(data, self.identifier))
+                        .expect("The sender for modification events panicked. Is the receiver still alive?");
+                }
+            }
+            Err(e) => {
+                panic!(
+                    "Could not serialize modification information because: {:?}",
+                    e
+                );
+            }
+        };
     }
 }

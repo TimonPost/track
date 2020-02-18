@@ -1,4 +1,5 @@
-use crate::{SerdeDiff, serialisation::SerialisationStrategy};
+use crate::error::ErrorKind;
+use crate::{serialisation::SerialisationStrategy, SerdeDiff};
 use std::fmt::Debug;
 
 /// Applies modified values to a type.
@@ -17,7 +18,7 @@ impl Apply {
         component: &mut C,
         data: &[u8],
         strategy: S,
-    ) {
-        strategy.apply_to(component, data);
+    ) -> Result<(), ErrorKind> {
+        strategy.apply_to(component, data)
     }
 }

@@ -8,8 +8,7 @@
 //! | `bincode-serialization` | serialisation using [bincode](LINK) (enabled by default) .|
 //! | `rmp-serialization` | serialisation using [rmp-serde](LINK) .|
 
-use std::result;
-
+use crate::error::ErrorKind;
 use crate::preclude::SerdeDiff;
 use serde::{Deserialize, Serialize};
 
@@ -28,14 +27,14 @@ pub mod rmp;
 /// An adapter interface with extension methods for serializing purposes used in this crate.
 pub trait SerialisationStrategy: Clone + Default + Send + Sync {
     /// Serializes the given type to a byte buffer.
-    fn serialize<I: Serialize>(&self, input: &I) -> Vec<u8>;
+    fn serialize<I: Serialize>(&self, input: &I) -> Result<Vec<u8>, ErrorKind>;
 
     /// Deserializes the given byte buffer to the desired type.
-    fn deserialize<'a, T: Deserialize<'a>>(&self, buffer: &'a [u8]) -> result::Result<T, ()>;
+    fn deserialize<'a, T: Deserialize<'a>>(&self, buffer: &'a [u8]) -> Result<T, ErrorKind>;
 
     /// Applies the given byte buffer to the given type.
     /// The buffer contains the data of the modified fields sent with the [ModificationEvent](LINK).
-    fn apply_to<C: SerdeDiff>(&self, component: &mut C, data: &[u8]);
+    fn apply_to<C: SerdeDiff>(&self, component: &mut C, data: &[u8]) -> Result<(), ErrorKind>;
 }
 
 /// A wrapper type over an implementation of [SerialisationStrategy](LINK).
@@ -49,11 +48,11 @@ impl<S: SerialisationStrategy> ModificationSerializer<S> {
         ModificationSerializer { strategy }
     }
 
-    pub fn serialize<I: Serialize>(&self, input: &I) -> Vec<u8> {
+    pub fn serialize<I: Serialize>(&self, input: &I) -> Result<Vec<u8>, ErrorKind> {
         self.strategy.serialize(input)
     }
 
-    pub fn deserialize<'a, T: Deserialize<'a>>(&self, buffer: &'a [u8]) -> result::Result<T, ()> {
+    pub fn deserialize<'a, T: Deserialize<'a>>(&self, buffer: &'a [u8]) -> Result<T, ErrorKind> {
         self.strategy.deserialize(buffer)
     }
 }
