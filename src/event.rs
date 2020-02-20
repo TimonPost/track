@@ -1,13 +1,15 @@
+use crate::Identifier;
+
 #[derive(Clone, Debug)]
 /// A modification event.
-pub struct ModificationEvent<I> {
+pub struct ModificationEvent<I: Identifier> {
     /// The serialized data of the modified structure fields.
     pub modified_fields: Vec<u8>,
     /// The reference to the corresponding type.
     pub identifier: I,
 }
 
-impl<I> ModificationEvent<I> {
+impl<I: Identifier> ModificationEvent<I> {
     /// Constructs a new [Modification Event](LINK).
     pub fn new(data: Vec<u8>, identifier: I) -> Self {
         ModificationEvent {
