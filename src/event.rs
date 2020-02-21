@@ -10,7 +10,7 @@ pub struct ModificationEvent<I: Identifier> {
 }
 
 impl<I: Identifier> ModificationEvent<I> {
-    /// Constructs a new [Modification Event](LINK).
+    /// Constructs a new [Modification Event](struct.ModificationEvent.html).
     pub fn new(data: Vec<u8>, identifier: I) -> Self {
         ModificationEvent {
             modified_fields: data,

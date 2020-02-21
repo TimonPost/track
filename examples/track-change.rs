@@ -1,6 +1,6 @@
-use track::{preclude::*, serialisation::bincode::Bincode, Apply, ModificationChannel};
+use track::{preclude::*, serialization::bincode::Bincode, Apply, ModificationChannel};
 
-#[track(serialisation = "Bincode")]
+#[track(serialization = "Bincode")]
 #[derive(Debug)]
 pub struct Position {
     pub x: u32,

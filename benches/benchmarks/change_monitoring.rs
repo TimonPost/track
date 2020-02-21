@@ -26,7 +26,7 @@ pub fn make_change_and_monitor(
 }
 
 pub fn monitoring_changes_benchmark(c: &mut Criterion) {
-    c.bench_function("Monitoring Change", |b| {
+    c.bench_function("Monitoring Change with bincode", |b| {
         let (tx, rx) = unbounded();
         let mut position = Position { x: 32.5, y: 11.3 };
 

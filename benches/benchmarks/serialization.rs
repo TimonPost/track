@@ -1,9 +1,9 @@
 use criterion::{criterion_group, Criterion};
 use serde::Serialize;
 
-use track::serialisation::bincode::Bincode;
-use track::serialisation::rmp::Rmp;
-use track::serialisation::{ModificationSerializer, SerialisationStrategy};
+use track::serialization::bincode::Bincode;
+use track::serialization::rmp::Rmp;
+use track::serialization::{ModificationSerializer, SerializationStrategy};
 
 #[derive(Clone, Serialize)]
 struct Position {
@@ -11,7 +11,7 @@ struct Position {
     y: f32,
 }
 
-fn serialize<T: SerialisationStrategy, C: Serialize>(
+fn serialize<T: SerializationStrategy, C: Serialize>(
     serializer: &ModificationSerializer<T>,
     serializable: C,
 ) {
@@ -19,14 +19,14 @@ fn serialize<T: SerialisationStrategy, C: Serialize>(
 }
 
 pub fn criterion_benchmark(c: &mut Criterion) {
-    c.bench_function("Serialisation with bincode", |b| {
+    c.bench_function("Serialization with bincode", |b| {
         let serializer = ModificationSerializer::new(Bincode);
         let packet = Position { x: 12.5, y: 33.6 };
 
         b.iter(|| serialize::<Bincode, Position>(&serializer, packet.clone()));
     });
 
-    c.bench_function("Serialisation with rmp-serde", |b| {
+    c.bench_function("Serialization with rmp-serde", |b| {
         let serializer = ModificationSerializer::new(Rmp);
         let packet = Position { x: 12.5, y: 33.6 };
 
@@ -34,4 +34,4 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     });
 }
 
-criterion_group!(serialisation, criterion_benchmark);
+criterion_group!(serialization, criterion_benchmark);
