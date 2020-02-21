@@ -19,7 +19,7 @@ bincode-serialization = ["bincode"]
 rmp-serialization = ["rmp-serde"]
 
 [dependencies]
-track-macro = { version = "0.0.0", path = "../track-macro" }
+track-macro = { version = "0.1.0", path = "../track-macro" }
 serde-diff = { version = "0.2.0"  }
 serde = "1"
 crossbeam-channel = "0.4.0"
