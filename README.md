@@ -116,4 +116,4 @@ _For a more in-depth example checkout the [examples](https://github.com/entity-s
 [docs-badge]: https://docs.rs/track/badge.svg
 [docs-link]: https://docs.rs/track/
 
-[loc-badge]: https://tokei.rs/b1/github/entity-sync-rs?category=code
+[loc-badge]: https://tokei.rs/b1/github/entity-sync-rs/track?category=code
