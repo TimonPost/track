@@ -7,6 +7,7 @@ use crate::{
     serialization::{ModificationSerializer, SerializationStrategy},
     Identifier, ModificationEvent, TrackableMarker,
 };
+use std::any::TypeId;
 
 /// Tracks value modifications of a type and sends events with these changes.
 ///
@@ -101,7 +102,7 @@ where
             Ok(data) => {
                 if diff.has_changes() {
                     self.notifier
-                        .send(ModificationEvent::new(data, self.identifier))
+                        .send(ModificationEvent::new(data, self.identifier, TypeId::of::<C>()))
                         .expect("The sender for modification events panicked. Is the receiver still alive?");
                 }
             }
