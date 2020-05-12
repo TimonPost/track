@@ -1,7 +1,7 @@
-use crate::error::ErrorKind;
-use crate::{preclude::SerdeDiff, serialization::SerializationStrategy};
 use serde::{Deserialize, Serialize};
-use std::error::Error;
+
+use crate::{preclude::SerdeDiff, serialization::SerializationStrategy};
+use crate::error::ErrorKind;
 
 #[derive(Clone, Debug)]
 /// Serialization strategy using bincode.

@@ -1,13 +1,10 @@
+use std::any::TypeId;
 use std::ops::{Deref, DerefMut};
 
 use crossbeam_channel::Sender;
 use serde_diff::{Config, Diff, FieldPathMode};
 
-use crate::{
-    serialization::{ModificationSerializer, SerializationStrategy},
-    Identifier, ModificationEvent, TrackableMarker,
-};
-use std::any::TypeId;
+use crate::{serialization::SerializationStrategy, TrackableMarker, ModificationEvent};
 
 /// Tracks value modifications of a type and sends events with these changes.
 ///
@@ -18,7 +15,7 @@ pub struct Tracker<'borrow, 'notifier, C, S, I>
 where
     C: TrackableMarker,
     S: SerializationStrategy,
-    I: Identifier,
+    I: Copy + Clone + Send + Sync,
 {
     old_copy: C,
     borrow: &'borrow mut C,
@@ -31,7 +28,7 @@ impl<'borrow, 'notifier, C, S, I> Tracker<'borrow, 'notifier, C, S, I>
 where
     C: TrackableMarker,
     S: SerializationStrategy,
-    I: Identifier,
+    I: Copy + Clone + Send + Sync,
 {
     /// Constructs a new tracker.
     ///
@@ -61,7 +58,7 @@ impl<'borrow, 'notifier, C, S, I> Deref for Tracker<'borrow, 'notifier, C, S, I>
 where
     C: TrackableMarker,
     S: SerializationStrategy,
-    I: Identifier,
+    I: Copy + Clone + Send + Sync,
 {
     type Target = C;
 
@@ -75,7 +72,7 @@ impl<'borrow, 'notifier, C, S, I> DerefMut for Tracker<'borrow, 'notifier, C, S,
 where
     C: TrackableMarker,
     S: SerializationStrategy,
-    I: Identifier,
+    I: Copy + Clone + Send + Sync,
 {
     /// Returns a mutable reference to the underlying type being tracked.
     fn deref_mut(&mut self) -> &mut Self::Target {
@@ -87,7 +84,7 @@ impl<'borrow, 'notifier, C, S, I> Drop for Tracker<'borrow, 'notifier, C, S, I>
 where
     C: TrackableMarker,
     S: SerializationStrategy,
-    I: Identifier,
+    I: Copy + Clone + Send + Sync,
 {
     /// Checks to see if any field values have changed.
     /// If this is the case, the changed fields will be packed into an event and an event will be sent.
@@ -96,9 +93,7 @@ where
             .with_field_path_mode(FieldPathMode::Index)
             .serializable_diff(&self.old_copy, &self.borrow);
 
-        let serializer = ModificationSerializer::new(self.serialization.clone());
-
-        match serializer.serialize::<Diff<C>>(&diff) {
+        match self.serialization.serialize::<Diff<C>>(&diff) {
             Ok(data) => {
                 if diff.has_changes() {
                     self.notifier

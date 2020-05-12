@@ -1,4 +1,4 @@
-use track::{preclude::*, serialization::bincode::Bincode, Apply, ModificationChannel};
+use track::{Apply, ModificationChannel, preclude::*, serialization::bincode::Bincode};
 
 #[track(serialization = "Bincode")]
 #[derive(Debug)]
@@ -11,8 +11,6 @@ pub struct Position {
 pub struct Identity {
     pub value: u8,
 }
-
-impl Identifier for Identity {}
 
 fn main() {
     let channel = ModificationChannel::<Identity>::new();

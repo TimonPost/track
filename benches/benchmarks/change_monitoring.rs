@@ -1,5 +1,6 @@
-use criterion::{criterion_group, Criterion};
+use criterion::{Criterion, criterion_group};
 use crossbeam_channel::unbounded;
+
 use track::preclude::*;
 
 #[track]

@@ -1,15 +1,14 @@
-use crossbeam_channel::{unbounded, Receiver, Sender};
+use crossbeam_channel::{Receiver, Sender, unbounded};
 
 use crate::event::ModificationEvent;
-use crate::Identifier;
 
 /// An event channel over which modification events are sent.
-pub struct ModificationChannel<I: Identifier> {
+pub struct ModificationChannel<I: Copy + Clone + Send + Sync> {
     event_receiver: Receiver<ModificationEvent<I>>,
     event_sender: Sender<ModificationEvent<I>>,
 }
 
-impl<I: Identifier> ModificationChannel<I> {
+impl<I: Copy + Clone + Send + Sync> ModificationChannel<I> {
     /// Constructs a new modification channel.
     pub fn new() -> ModificationChannel<I> {
         let (tx, rx) = unbounded();

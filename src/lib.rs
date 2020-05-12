@@ -36,8 +36,6 @@
 //!     pub value: u8,
 //! }
 //!
-//! impl Identifier for Identity {}
-//!
 //! fn main() {
 //!     let channel = ModificationChannel::<Identity>::new();
 //!
@@ -83,15 +81,16 @@
 //!
 //! _For a more in-depth example checkout the [examples](https://github.com/entity-sync-rs/track/tree/master/examples) on github._
 
+use std::fmt::Debug;
+
 use crossbeam_channel::Sender;
 use serde_diff::SerdeDiff;
+
+pub use track_macro::track;
 
 pub use self::{
     apply::Apply, channel::ModificationChannel, event::ModificationEvent, tracker::Tracker,
 };
-pub use track_macro::track;
-
-use std::fmt::Debug;
 
 mod apply;
 mod channel;
@@ -109,7 +108,7 @@ where
     C: TrackableMarker,
     S: serialization::SerializationStrategy,
 {
-    fn track<'notifier, I: Identifier>(
+    fn track<'notifier, I: Copy + Clone + Send + Sync>(
         &mut self,
         sender: &'notifier Sender<ModificationEvent<I>>,
         identifier: I,
@@ -118,9 +117,6 @@ where
 
 /// A marker trait with a number of requirements that are mandatory for trackable types.
 pub trait TrackableMarker: Clone + SerdeDiff + Debug + Send + Sync + 'static {}
-
-/// A marker trait witch should be implemented for types used as identity in the [Tracker](./struct.Tracker.html).
-pub trait Identifier: Copy + Clone + Send + Sync {}
 
 pub mod re_exports {
     /// A re-export of the [serde](https://crates.io/crates/serde) create.
@@ -141,16 +137,15 @@ pub mod re_exports {
 
 /// A re-export with types needed for the [track](./struct.Tracker.html) attribute.
 pub mod preclude {
-    pub use crate::{Identifier, ModificationEvent, Trackable, TrackableMarker, Tracker};
-
-    pub use self::serde_diff::SerdeDiff;
     pub use crossbeam_channel::Sender;
     pub use serde::{Deserialize, Serialize};
 
     pub use track_macro::track;
 
-    pub use crate::serialization::{bincode::Bincode, SerializationStrategy};
-
+    pub use crate::{ModificationEvent, Trackable, TrackableMarker, Tracker};
     // [serde-diff](https://crates.io/crates/serde-diff)s macro's require `serde_diff` to be imported when we use `track` attribute macro.
     pub use crate::re_exports::serde_diff;
+    pub use crate::serialization::{bincode::Bincode, SerializationStrategy};
+
+    pub use self::serde_diff::SerdeDiff;
 }

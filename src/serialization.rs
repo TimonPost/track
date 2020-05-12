@@ -8,9 +8,10 @@
 //! | `bincode-serialization` | serialization using [bincode](https://crates.io/crates/bincode) (enabled by default) .|
 //! | `rmp-serialization` | serialization using [rmp-serde](https://crates.io/crates/rmp-serde) .|
 
+use serde::{Deserialize, Serialize};
+
 use crate::error::ErrorKind;
 use crate::preclude::SerdeDiff;
-use serde::{Deserialize, Serialize};
 
 /// Implementation of [SerializationStrategy](./trait.SerializationStrategy.html) for serializing with [bincode](https://crates.io/crates/bincode).
 /// It is enabled with the `bincode-serialization` feature flag.

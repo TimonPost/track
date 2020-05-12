@@ -1,9 +1,9 @@
-use criterion::{criterion_group, Criterion};
+use criterion::{Criterion, criterion_group};
 use serde::Serialize;
 
+use track::serialization::{ModificationSerializer, SerializationStrategy};
 use track::serialization::bincode::Bincode;
 use track::serialization::rmp::Rmp;
-use track::serialization::{ModificationSerializer, SerializationStrategy};
 
 #[derive(Clone, Serialize)]
 struct Position {

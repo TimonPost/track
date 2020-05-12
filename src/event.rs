@@ -1,9 +1,8 @@
-use crate::Identifier;
 use std::any::TypeId;
 
 #[derive(Clone, Debug)]
 /// A modification event.
-pub struct ModificationEvent<I: Identifier> {
+pub struct ModificationEvent<I: Copy + Clone + Send + Sync> {
     /// The serialized data of the modified structure fields.
     pub modified_fields: Vec<u8>,
     /// The reference to the corresponding type.
@@ -12,7 +11,7 @@ pub struct ModificationEvent<I: Identifier> {
     pub type_id: TypeId
 }
 
-impl<I: Identifier> ModificationEvent<I> {
+impl<I: Copy + Clone + Send + Sync> ModificationEvent<I> {
     /// Constructs a new [Modification Event](struct.ModificationEvent.html).
     pub fn new(data: Vec<u8>, identifier: I, type_id: TypeId) -> Self {
         ModificationEvent {

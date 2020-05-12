@@ -1,6 +1,5 @@
+use crate::{SerdeDiff, serialization::SerializationStrategy};
 use crate::error::ErrorKind;
-use crate::{serialization::SerializationStrategy, SerdeDiff};
-use std::fmt::Debug;
 
 /// Applies modified values to a type.
 pub struct Apply;
@@ -12,7 +11,7 @@ impl Apply {
     /// * `data`: the buffer with the modified type values.
     /// * `strategy`: the strategy used to deserialize the given `data` into the given `type`.
     pub fn apply_to<
-        C: Clone + SerdeDiff + Debug + Send + Sync + SerdeDiff + 'static,
+        C: SerdeDiff,
         S: SerializationStrategy,
     >(
         component: &mut C,
